@@ -32,7 +32,7 @@ def show_disk_info(disk):
         print(f"Serial Number:   {Serial_Number}")
         print(f"Device Model:    {Device_Model}")
     else:
-        print(f"Disk /dev/{disk}: Unable to detect device type")
+        print(f"Disk /dev/{disk}: Unable to detect device type,it may not be a physical disk")
 
 def disk_light_on(disk, light_on_by="dd"):
     print("disk light on")
