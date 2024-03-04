@@ -17,7 +17,7 @@ def get_disk_info(disk):
     lines = disk_info.split("\n")
     Serial_Number = ""
     Device_Model = ""
-    disk_is_light = false
+    disk_is_light = False
     for line in lines:
         if line.startswith("Serial Number:"):
             Serial_Number = line.split(":")[1].strip()
