@@ -17,26 +17,32 @@ def get_disk_info(disk):
     lines = disk_info.split("\n")
     Serial_Number = ""
     Device_Model = ""
+    disk_is_light = false
     for line in lines:
         if line.startswith("Serial Number:"):
             Serial_Number = line.split(":")[1].strip()
         elif line.startswith("Device Model:"):
             Device_Model = line.split(":")[1].strip()
 
-    return Serial_Number,Device_Model
+    return Serial_Number,Device_Model,disk_is_light
 
 def show_disk_info(disk):
-    Serial_Number,Device_Model = get_disk_info(disk)
+    Serial_Number,Device_Model,disk_is_light = get_disk_info(disk)
     if Serial_Number and Device_Model:
         print(f"Disk /dev/{disk} info:")
         print(f"Serial Number:   {Serial_Number}")
         print(f"Device Model:    {Device_Model}")
+        if disk_is_light:
+            print(f"/dev/{disk} LED is TurnOn")
+        else:
+            print(f"/dev/{disk} LED is TurnOff")
     else:
         print(f"Disk /dev/{disk}: Unable to detect device type,it may not be a physical disk")
 
 def disk_light_on(disk, light_on_by="dd"):
     print("disk light on")
-    get_disk_info(disk)
+    disk_is_light = get_disk_info(disk)[2]
+    print(disk_is_light)
     if light_on_by == "dd":
         pass
 
