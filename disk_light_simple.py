@@ -55,7 +55,6 @@ def disk_light_on(disk, light_on_by="dd"):
     if light_on_by == "libstorage":
         pass
 
-
 def main():
     # create a parser and add parameters
     parser = argparse.ArgumentParser(description="Manage disk options")
@@ -77,14 +76,11 @@ def main():
     )
     # Parsing command line arguments
     args = parser.parse_args()
-
     if args.show:
         show_disk_info(args.show)
-
     if args.lightOnBy:
         if not args.lightOn:
             parser.error("--lightOnBy must be used with --lightOn")
-
     if args.lightOn:
         if args.lightOnBy:
             disk_light_on(args.lightOn,args.lightOnBy)
