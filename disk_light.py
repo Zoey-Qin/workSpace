@@ -16,7 +16,7 @@ def check_disk_exists(disk):
         print(f"Error: device /dev/{disk} Not found")
         exit(1)
 
-ddef get_disk_info(disk):
+def get_disk_info(disk):
     check_disk_exists(disk)
     # get disk smart info
     disk_info = subprocess.check_output(["smartctl", "-i", f"/dev/{disk}"]).decode()
@@ -25,7 +25,7 @@ ddef get_disk_info(disk):
     Device_Model = ""
     disk_is_light = False
 
-    # get disk serial_number and Device_model
+    # get disk Serial_number and Device_model
     for line in lines:
         if line.startswith("Serial Number:"):
             Serial_Number = line.split(":")[1].strip()
@@ -44,11 +44,6 @@ ddef get_disk_info(disk):
         print(f"debug: {disk} led light is off")  # 打印调试信息
 
     return Serial_Number, Device_Model, disk_is_light
-    lines = disk_info.split("\n")
-    Serial_Number = ""
-
-
-    return Serial_Number,Device_Model,disk_is_light
 
 def show_disk_info(disk):
     Serial_Number,Device_Model,disk_is_light = get_disk_info(disk)
