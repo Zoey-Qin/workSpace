@@ -72,7 +72,7 @@ def main():
     )
     parser.add_argument("--lightOnBy",
         type=str,
-        metavar="[dd/megacli/libstorage]",
+        metavar="[tool]",
         choices=['dd'],
         help="Turn on the light of the specified disk by which tools",
     )
