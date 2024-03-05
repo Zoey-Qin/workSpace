@@ -77,7 +77,6 @@ WantedBy=multi-user.target
     with open(service_file_path, "w") as f:
         f.write(service_content)
     # start service
-    # subprocess.run(["systemctl", "enable", service_name])
     subprocess.run(["systemctl", "start", service_name])
     # check service status
     disk_is_light =get_disk_info(disk)[2]
@@ -87,7 +86,6 @@ WantedBy=multi-user.target
     else:
         print(f"Disk {disk} is light up failed, please check it.")
         exit(1)
-
 
 def disk_light_on(disk, light_on_by="dd"):
     print("disk light on")
@@ -108,10 +106,13 @@ def disk_light_off(disk):
     if disk_is_light:
         service_name = f"{disk}_light_on.service"
         subprocess.run(["systemctl", "stop", service_name])
+        subprocess.run(["systemctl", "disable", service_name])
         # check service status
         disk_is_light =get_disk_info(disk)[2]
         if not disk_is_light:
             print(f"Disk {disk} LED turn off successfully.")
+            service_file = f"/etc/systemd/system/{disk}_light_on.service"
+            subprocess.run(["rm",service_file])
             exit (0)
     else:
         print(f"Disk {disk} LED is not light.")
