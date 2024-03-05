@@ -13,29 +13,28 @@ def check_disk_exists(disk):
 def get_disk_info(disk):
     check_disk_exists(disk)
     # get disk smart info
-    disk_info = subprocess.check_output(["smartctl", "-i", f"/dev/{disk}"]).decode()
-    lines = disk_info.split("\n")
     Serial_Number = ""
     Device_Model = ""
     disk_is_light = False
-
-    # get disk Serial_number and Device_model
-    for line in lines:
-        if line.startswith("Serial Number:"):
-            Serial_Number = line.split(":")[1].strip()
-        elif line.startswith("Device Model:"):
-            Device_Model = line.split(":")[1].strip()
-
-    return Serial_Number, Device_Model, disk_is_light
+    try:
+        disk_info = subprocess.check_output(["smartctl", "-i", f"/dev/{disk}"]).decode()
+        lines = disk_info.split("\n")
+        # get disk Serial_number and Device_model
+        for line in lines:
+            if line.startswith("Serial Number:"):
+                Serial_Number = line.split(":")[1].strip()
+            elif line.startswith("Device Model:"):
+                Device_Model = line.split(":")[1].strip()
+        return Serial_Number, Device_Model, disk_is_light
+    except subprocess.CalledProcessError as e:
+        print(f"Disk /dev/{disk}: Unable to detect device type,it may not be a physical disk.")
+        exit (1)
 
 def show_disk_info(disk):
     Serial_Number,Device_Model,__= get_disk_info(disk)
-    if Serial_Number and Device_Model:
-        print(f"Disk /dev/{disk} info:")
-        print(f"Serial Number:   {Serial_Number}")
-        print(f"Device Model:    {Device_Model}")
-    else:
-        print(f"Disk /dev/{disk}: Unable to detect device type,it may be of type NVMe, or it may not be a physical disk.")
+    print(f"Disk /dev/{disk} info:")
+    print(f"Serial Number:   {Serial_Number}")
+    print(f"Device Model:    {Device_Model}")
 
 def light_on_by_dd(disk):
     print(f"debug:{disk} led start lit on")
@@ -76,7 +75,6 @@ def main():
         choices=['dd'],
         help="Turn on the light of the specified disk by which tools",
     )
-
     # Parsing command line arguments
     args = parser.parse_args()
 
@@ -92,7 +90,6 @@ def main():
             disk_light_on(args.lightOn,args.lightOnBy)
         else:
             disk_light_on(args.lightOn)
-
 
 if __name__ == '__main__':
     main()
