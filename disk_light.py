@@ -77,7 +77,7 @@ WantedBy=multi-user.target
     with open(service_file_path, "w") as f:
         f.write(service_content)
     # start service
-    subprocess.run(["systemctl", "enable", service_name])
+    # subprocess.run(["systemctl", "enable", service_name])
     subprocess.run(["systemctl", "start", service_name])
     # check service status
     disk_is_light =get_disk_info(disk)[2]
@@ -103,10 +103,19 @@ def disk_light_on(disk, light_on_by="dd"):
         pass
 
 def disk_light_off(disk):
-    get_disk_info(disk)
-    print("disk light off")
-
-
+    # check service status
+    disk_is_light =get_disk_info(disk)[2]
+    if disk_is_light:
+        service_name = f"{disk}_light_on.service"
+        subprocess.run(["systemctl", "stop", service_name])
+        # check service status
+        disk_is_light =get_disk_info(disk)[2]
+        if not disk_is_light:
+            print(f"Disk {disk} LED turn off successfully.")
+            exit (0)
+    else:
+        print(f"Disk {disk} LED is not light.")
+        exit (0)
 
 def main():
     # create a parser and add parameters
@@ -151,8 +160,8 @@ def main():
             disk = args.lightOn
             disk_light_on(disk)
 
-            if args.lightOff:
-        disk_light_off(args.lightOff, "dd")
+    if args.lightOff:
+        disk_light_off(args.lightOff)
 
 if __name__ == '__main__':
     main()
