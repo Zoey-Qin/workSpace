@@ -83,7 +83,7 @@ WantedBy=multi-user.target
     disk_is_light =get_disk_info(disk)[2]
     if disk_is_light:
         print(f"Disk {disk} is light up successfully.")
-        return 0
+        exit (0)
     else:
         print(f"Disk {disk} is light up failed, please check it.")
         exit(1)
