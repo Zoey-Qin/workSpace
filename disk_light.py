@@ -2,6 +2,7 @@
 import argparse
 import subprocess
 import sys
+import os
 
 def check_root():
     if os.geteuid() != 0:
@@ -21,29 +22,29 @@ def get_disk_info(disk):
     # get disk smart info
     disk_info = subprocess.check_output(["smartctl", "-i", f"/dev/{disk}"]).decode()
     lines = disk_info.split("\n")
-    Serial_Number = ""
-    Device_Model = ""
+    serial_number = ""
+    device_model = ""
     disk_is_light = False
 
     # get disk Serial_number and Device_model
     for line in lines:
         if line.startswith("Serial Number:"):
-            Serial_Number = line.split(":")[1].strip()
+            serial_number = line.split(":")[1].strip()
         elif line.startswith("Device Model:"):
-            Device_Model = line.split(":")[1].strip()
+            device_model = line.split(":")[1].strip()
 
     # check if disk_light_on is running
     service_name = f"{disk}_light_on.service"
     try:
-        disk_light = subprocess.check_output(["systemctl", "is-active", service_name])
-        if disk_light.strip().decode() == "active":
+        disk_light_status = subprocess.check_output(["systemctl", "is-active", service_name])
+        if disk_light_status.strip().decode() == "active":
             disk_is_light = True
             print(f"debug: {disk} led light is on")
     except subprocess.CalledProcessError:
         disk_is_light = False
         print(f"debug: {disk} led light is off")
 
-    return Serial_Number, Device_Model, disk_is_light
+    return serial_number,device_model,disk_is_light
 
 def show_disk_info(disk):
     Serial_Number,Device_Model,disk_is_light = get_disk_info(disk)
@@ -59,22 +60,22 @@ def show_disk_info(disk):
         print(f"Disk /dev/{disk}: Unable to detect device type,it may be of type NVMe, or it may not be a physical disk.")
 
 def light_on_by_dd(disk):
-#     filename = f"light_{disk}.txt"
-#     with open(filename,"w") as file:
-#         file.write(f"This file is used for disk {disk} light on.")
+    filename = f"light_{disk}.txt"
+    with open(filename,"w") as file:
+        file.write(f"This file is used for disk {disk} light on.")
 
-#     service_name = f"{disk}_light_on.service"
-#     service_content = f"""\
-# [Unit]
-# Description=Disk Light On Service for /dev/{disk}
+    service_name = f"{disk}_light_on.service"
+    service_content = f"""\
+[Unit]
+Description=Disk Light On Service for /dev/{disk}
 
-# [Service]
-# Type=simple
-# ExecStart=/usr/bin/dd if=/dev/{disk} of=/dev/null bs=1M status=none
+[Service]
+Type=simple
+ExecStart=/usr/bin/dd if=/dev/{disk} of=/dev/null bs=1M status=none
 
-# [Install]
-# WantedBy=multi-user.target
-# """
+[Install]
+WantedBy=multi-user.target
+"""
 
 
 
