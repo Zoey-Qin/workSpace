@@ -80,7 +80,14 @@ WantedBy=multi-user.target
     subprocess.run(["systemctl", "enable", service_name])
     subprocess.run(["systemctl", "start", service_name])
     # check service status
-    disk_light_status =get_disk_info(disk)[2]
+    disk_is_light =get_disk_info(disk)[2]
+    if disk_is_light:
+        print(f"Disk {disk} is light up successfully.")
+        return 0
+    else:
+        print(f"Disk {disk} is light up failed, please check it.")
+        exit(1)
+
 
 def disk_light_on(disk, light_on_by="dd"):
     print("disk light on")
