@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 import argparse
 import subprocess
+import sys
+
+def check_root():
+    if os.geteuid() != 0:
+        print("This script requires root privileges. Please run it as root.")
+        sys.exit(1)
 
 def check_disk_exists(disk):
     # Check that the disk exists
@@ -17,7 +23,7 @@ ddef get_disk_info(disk):
     lines = disk_info.split("\n")
     Serial_Number = ""
     Device_Model = ""
-    disk_is_light = False  # 设置为布尔值
+    disk_is_light = False
 
     # get disk serial_number and Device_model
     for line in lines:
