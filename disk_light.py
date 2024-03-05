@@ -7,7 +7,7 @@ import os
 def check_root():
     if os.geteuid() != 0:
         print("This script requires root privileges. Please run it as root.")
-        sys.exit(1)
+        exit(1)
 
 def check_disk_exists(disk):
     # Check that the disk exists
