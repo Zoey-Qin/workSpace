@@ -36,12 +36,12 @@ def get_disk_info(disk):
     service_name = f"{disk}_light_on.service"
     try:
         disk_light = subprocess.check_output(["systemctl", "is-active", service_name])
-        if disk_light.strip().decode() == "active":  # 解码为字符串进行比较
+        if disk_light.strip().decode() == "active":
             disk_is_light = True
-            print(f"debug: {disk} led light is on")  # 打印调试信息
+            print(f"debug: {disk} led light is on")
     except subprocess.CalledProcessError:
         disk_is_light = False
-        print(f"debug: {disk} led light is off")  # 打印调试信息
+        print(f"debug: {disk} led light is off")
 
     return Serial_Number, Device_Model, disk_is_light
 
