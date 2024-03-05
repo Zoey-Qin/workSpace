@@ -59,22 +59,22 @@ def show_disk_info(disk):
         print(f"Disk /dev/{disk}: Unable to detect device type,it may be of type NVMe, or it may not be a physical disk.")
 
 def light_on_by_dd(disk):
-    filename = f"light_{disk}.txt"
-    with open(filename,"w") as file:
-        file.write(f"This file is used for disk {disk} light on.")
+#     filename = f"light_{disk}.txt"
+#     with open(filename,"w") as file:
+#         file.write(f"This file is used for disk {disk} light on.")
 
-    service_name = f"{disk}_light_on.service"
-    service_content = f"""\
-[Unit]
-Description=Disk Light On Service for /dev/{disk}
+#     service_name = f"{disk}_light_on.service"
+#     service_content = f"""\
+# [Unit]
+# Description=Disk Light On Service for /dev/{disk}
 
-[Service]
-Type=simple
-ExecStart=/usr/bin/dd if=/dev/zero of={filename} bs=4096 status=none
+# [Service]
+# Type=simple
+# ExecStart=/usr/bin/dd if=/dev/{disk} of=/dev/null bs=1M status=none
 
-[Install]
-WantedBy=multi-user.target
-"""
+# [Install]
+# WantedBy=multi-user.target
+# """
 
 
 
