@@ -57,7 +57,7 @@ def show_disk_info(disk):
         else:
             print(f"/dev/{disk} LED is TurnOff")
     else:
-        print(f"Disk /dev/{disk}: Unable to detect device type,it may be of type NVMe, or it may not be a physical disk.")
+        print(f"Disk /dev/{disk}: Unable to detect device type,it may not be a physical disk.")
 
 def light_on_by_dd(disk):
     service_name = f"{disk}_light_on.service"
