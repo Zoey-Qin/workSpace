@@ -60,10 +60,6 @@ def show_disk_info(disk):
         print(f"Disk /dev/{disk}: Unable to detect device type,it may be of type NVMe, or it may not be a physical disk.")
 
 def light_on_by_dd(disk):
-    filename = f"light_{disk}.txt"
-    with open(filename,"w") as file:
-        file.write(f"This file is used for disk {disk} light on.")
-
     service_name = f"{disk}_light_on.service"
     service_content = f"""\
 [Unit]
@@ -71,15 +67,20 @@ Description=Disk Light On Service for /dev/{disk}
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/dd if=/dev/{disk} of=/dev/null bs=1M status=none
+ExecStart=/usr/bin/dd if=/dev/{disk} of=/dev/null bs=1M
 
 [Install]
 WantedBy=multi-user.target
 """
-
-
-
-
+    # create service file
+    service_file_path = f"/etc/systemd/system/{service_name}"
+    with open(service_file_path, "w") as f:
+        f.write(service_content)
+    # start service
+    subprocess.run(["systemctl", "enable", service_name])
+    subprocess.run(["systemctl", "start", service_name])
+    # check service status
+    disk_light_status =get_disk_info(disk)[2]
 
 def disk_light_on(disk, light_on_by="dd"):
     print("disk light on")
@@ -88,8 +89,11 @@ def disk_light_on(disk, light_on_by="dd"):
         print(f"The led of {disk} has already been turned on, there is no need to turn it on repeatedly.")
         exit(0)
     if light_on_by == "dd":
+        light_on_by_dd(disk)
+    if light_on_by == "megacli":
         pass
-
+    if light_on_by == "libstorage":
+        pass
 
 def disk_light_off(disk):
     get_disk_info(disk)
