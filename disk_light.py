@@ -5,11 +5,19 @@ import sys
 import os
 
 def check_root():
+    """
+    Checks whether the user is root.
+    """
     if os.geteuid() != 0:
         print("This script requires root privileges. Please run it as root.")
         exit(1)
 
 def check_disk_exists(disk):
+    """
+    Checks whether the specified disk exists.
+    parameter:
+        - disk: The string, the specified disk device name, such as 'sda'.
+    """
     # Check that the disk exists
     output = subprocess.check_output(["lsblk","-dno","name"]).decode().strip()
     disks = output.splitlines()
@@ -18,6 +26,16 @@ def check_disk_exists(disk):
         exit(1)
 
 def get_disk_info(disk):
+    """
+    Gets the information about the specified disk, including the serial number, \
+        whether it is of the NVMe type, and whether the disk_light_on service is active.
+    parameter:
+        - disk: The string, the specified disk device name, such as 'sda'.
+    returned value:
+        - serial_number: String, the serial number of the disk.
+        - disk_is_light: Boolean indicating whether the disk_light_on service is running.
+        - disk_is_nvme: Boolean indicating whether the disk is of NVMe type.
+    """
     check_disk_exists(disk)
     # check if disk is NVMe type
     nvme_list = subprocess.check_output(["nvme", "list"]).decode()
@@ -47,6 +65,12 @@ def get_disk_info(disk):
     return serial_number,disk_is_light,disk_is_NVMe
 
 def show_disk_info(disk):
+    """
+    Shows the information about the specified disk, including the serial number, \
+        whether it is of the NVMe type, and whether the disk_light_on service is active.
+    parameter:
+        - disk: The string, the specified disk device name, such as 'sda'.
+    """
     serial_number,disk_is_light,disk_is_NVMe = get_disk_info(disk)
     if serial_number:
         print(f"Disk /dev/{disk} info:")
@@ -64,6 +88,11 @@ def show_disk_info(disk):
         print(f"Disk /dev/{disk}: Unable to detect device type,it may not be a physical disk.")
 
 def light_on_by_dd(disk):
+    """
+    Turns on the LED light of the specified disk.
+    parameter:
+        - disk: The string, the specified disk device name, such as 'sda'.
+    """
     service_name = f"{disk}_light_on.service"
     service_content = f"""\
 [Unit]
@@ -92,6 +121,13 @@ WantedBy=multi-user.target
         exit(1)
 
 def disk_light_on(disk, light_on_by="dd"):
+    """
+    Turns on the LED light of the specified disk.
+    parameter:
+        - disk: The string, the specified disk device name, such as 'sda'.
+        - light_on_by: The string, the method to turn on the LED light, \
+            dd: dd command, megacli: megacli command, libstorage: libstorage command.
+    """
     __,disk_is_light,disk_is_NVMe = get_disk_info(disk)
     if disk_is_NVMe:
         print(f"Disk {disk} is NVMe type, it does not support LED light.")
@@ -107,6 +143,11 @@ def disk_light_on(disk, light_on_by="dd"):
         pass
 
 def disk_light_off(disk):
+    """
+    Turns off the LED light of the specified disk.
+    parameter:
+        - disk: The string, the specified disk device name, such as 'sda'.
+    """
     # check service status
     disk_is_light =get_disk_info(disk)[1]
     if disk_is_light:
@@ -129,6 +170,9 @@ def disk_light_off(disk):
         exit (0)
 
 def main():
+    """
+    Main function
+    """
     # create a parser and add parameters
     parser = argparse.ArgumentParser(description="Manage disk options")
     parser.add_argument("--show",
