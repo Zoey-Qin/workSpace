@@ -32,14 +32,12 @@ def get_disk_info(disk):
     serial_number = ""
     device_model = ""
     disk_is_light = False
-
     # get disk Serial_number and Device_model
     for line in lines:
         if line.startswith("Serial Number:"):
             serial_number = line.split(":")[1].strip()
         elif line.startswith("Device Model:"):
             device_model = line.split(":")[1].strip()
-
     # check if disk_light_on is running
     if not disk_is_NVMe:
         service_name = f"{disk}_light_on.service"
@@ -154,14 +152,11 @@ def main():
 
     # Parsing command line arguments
     args = parser.parse_args()
-
     if args.show:
         show_disk_info(args.show)
-
     if args.lightOnBy:
         if not args.lightOn:
             parser.error("--lightOnBy must be used with --lightOn")
-
     if args.lightOn:
         if args.lightOnBy:
             disk = args.lightOn
@@ -170,7 +165,6 @@ def main():
         else:
             disk = args.lightOn
             disk_light_on(disk)
-
     if args.lightOff:
         disk_light_off(args.lightOff)
 
