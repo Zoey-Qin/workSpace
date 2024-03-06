@@ -19,6 +19,13 @@ def check_disk_exists(disk):
 
 def get_disk_info(disk):
     check_disk_exists(disk)
+    # check if disk is NVMe type
+    nvme_list = subprocess.check_output(["nvme", "list"]).decode()
+    if f"/dev/{disk}" in nvme_list:
+        print(f"debug: {disk} is NVMe type")
+        disk_is_NVMe = True
+    else:
+        disk_is_NVMe = False
     # get disk smart info
     disk_info = subprocess.check_output(["smartctl", "-i", f"/dev/{disk}"]).decode()
     lines = disk_info.split("\n")
@@ -34,20 +41,19 @@ def get_disk_info(disk):
             device_model = line.split(":")[1].strip()
 
     # check if disk_light_on is running
-    service_name = f"{disk}_light_on.service"
-    try:
-        disk_light_status = subprocess.check_output(["systemctl", "is-active", service_name])
-        if disk_light_status.strip().decode() == "active":
-            disk_is_light = True
-            print(f"debug: {disk} led light is on")
-    except subprocess.CalledProcessError:
-        disk_is_light = False
-        print(f"debug: {disk} led light is off")
+    if not disk_is_NVMe:
+        service_name = f"{disk}_light_on.service"
+        try:
+            disk_light_status = subprocess.check_output(["systemctl", "is-active", service_name])
+            if disk_light_status.strip().decode() == "active":
+                disk_is_light = True
+        except subprocess.CalledProcessError:
+            disk_is_light = False
 
-    return serial_number,device_model,disk_is_light
+    return serial_number,device_model,disk_is_light,disk_is_NVMe
 
 def show_disk_info(disk):
-    Serial_Number,Device_Model,disk_is_light = get_disk_info(disk)
+    Serial_Number,Device_Model,disk_is_light,disk_is_NVMe = get_disk_info(disk)
     if Serial_Number and Device_Model:
         print(f"Disk /dev/{disk} info:")
         print(f"Serial Number:   {Serial_Number}")
