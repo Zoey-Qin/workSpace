@@ -58,10 +58,15 @@ def show_disk_info(disk):
         print(f"Disk /dev/{disk} info:")
         print(f"Serial Number:   {Serial_Number}")
         print(f"Device Model:    {Device_Model}")
+        if disk_is_NVMe:
+            print(f"Disk /dev/{disk} is NVMe type")
+            exit (0)
         if disk_is_light:
             print(f"/dev/{disk} LED is TurnOn")
+            exit (0)
         else:
             print(f"/dev/{disk} LED is TurnOff")
+            exit (0)
     else:
         print(f"Disk /dev/{disk}: Unable to detect device type,it may not be a physical disk.")
 
