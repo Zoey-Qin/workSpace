@@ -93,7 +93,10 @@ WantedBy=multi-user.target
         exit(1)
 
 def disk_light_on(disk, light_on_by="dd"):
-    disk_is_light = get_disk_info(disk)[1]
+    __,disk_is_light,disk_is_NVMe = get_disk_info(disk)
+    if disk_is_NVMe:
+        print(f"Disk {disk} is NVMe type, it does not support LED light.")
+        exit(1)
     if disk_is_light:
         print(f"The led of {disk} has already been turned on, there is no need to turn it on repeatedly.")
         exit(0)
