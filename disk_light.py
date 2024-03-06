@@ -88,7 +88,6 @@ WantedBy=multi-user.target
         exit(1)
 
 def disk_light_on(disk, light_on_by="dd"):
-    print("disk light on")
     disk_is_light = get_disk_info(disk)[2]
     if disk_is_light:
         print(f"The led of {disk} has already been turned on, there is no need to turn it on repeatedly.")
