@@ -53,11 +53,11 @@ def get_disk_info(disk):
     return serial_number,device_model,disk_is_light,disk_is_NVMe
 
 def show_disk_info(disk):
-    Serial_Number,Device_Model,disk_is_light,disk_is_NVMe = get_disk_info(disk)
-    if Serial_Number and Device_Model:
+    serial_number,device_model,disk_is_light,disk_is_NVMe = get_disk_info(disk)
+    if serial_number and device_model:
         print(f"Disk /dev/{disk} info:")
-        print(f"Serial Number:   {Serial_Number}")
-        print(f"Device Model:    {Device_Model}")
+        print(f"Serial Number:   {serial_number}")
+        print(f"Device Model:    {device_model}")
         if disk_is_NVMe:
             print(f"Disk /dev/{disk} is NVMe type")
             exit (0)
