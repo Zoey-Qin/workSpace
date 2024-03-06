@@ -118,8 +118,12 @@ def disk_light_off(disk):
         if not disk_is_light:
             print(f"Disk {disk} LED turn off successfully.")
             service_file = f"/etc/systemd/system/{disk}_light_on.service"
-            subprocess.run(["rm",service_file])
-            exit (0)
+            try:
+                subprocess.run(["rm",service_file])
+                exit (0)
+            except FileNotFoundError:
+                print(f"Disk light serive not found,may be the disk is not light.")
+                exit (1)
     else:
         print(f"Disk {disk} LED is not light.")
         exit (0)
