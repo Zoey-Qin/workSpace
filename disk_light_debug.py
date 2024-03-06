@@ -22,6 +22,7 @@ def get_disk_info(disk):
     # check if disk is NVMe type
     nvme_list = subprocess.check_output(["nvme", "list"]).decode()
     if f"/dev/{disk}" in nvme_list:
+        print(f"debug: {disk} is NVMe type")
         disk_is_NVMe = True
     else:
         disk_is_NVMe = False
