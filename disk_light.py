@@ -30,14 +30,11 @@ def get_disk_info(disk):
     disk_info = subprocess.check_output(["smartctl", "-i", f"/dev/{disk}"]).decode()
     lines = disk_info.split("\n")
     serial_number = ""
-    device_model = ""
     disk_is_light = False
-    # get disk Serial_number and Device_model
+    # get disk Serial_number
     for line in lines:
         if line.startswith("Serial Number:"):
             serial_number = line.split(":")[1].strip()
-        elif line.startswith("Device Model:"):
-            device_model = line.split(":")[1].strip()
     # check if disk_light_on is running
     if not disk_is_NVMe:
         service_name = f"{disk}_light_on.service"
@@ -48,14 +45,13 @@ def get_disk_info(disk):
         except subprocess.CalledProcessError:
             disk_is_light = False
 
-    return serial_number,device_model,disk_is_light,disk_is_NVMe
+    return serial_number,disk_is_light,disk_is_NVMe
 
 def show_disk_info(disk):
-    serial_number,device_model,disk_is_light,disk_is_NVMe = get_disk_info(disk)
-    if serial_number and device_model:
+    serial_number,disk_is_light,disk_is_NVMe = get_disk_info(disk)
+    if serial_number:
         print(f"Disk /dev/{disk} info:")
         print(f"Serial Number:   {serial_number}")
-        print(f"Device Model:    {device_model}")
         if disk_is_NVMe:
             print(f"Disk /dev/{disk} is NVMe type")
             exit (0)
@@ -88,7 +84,7 @@ WantedBy=multi-user.target
     # start service
     subprocess.run(["systemctl", "start", service_name])
     # check service status
-    disk_is_light =get_disk_info(disk)[2]
+    disk_is_light =get_disk_info(disk)[1]
     if disk_is_light:
         print(f"Disk {disk} is light up successfully.")
         exit (0)
@@ -97,7 +93,7 @@ WantedBy=multi-user.target
         exit(1)
 
 def disk_light_on(disk, light_on_by="dd"):
-    disk_is_light = get_disk_info(disk)[2]
+    disk_is_light = get_disk_info(disk)[1]
     if disk_is_light:
         print(f"The led of {disk} has already been turned on, there is no need to turn it on repeatedly.")
         exit(0)
@@ -110,13 +106,13 @@ def disk_light_on(disk, light_on_by="dd"):
 
 def disk_light_off(disk):
     # check service status
-    disk_is_light =get_disk_info(disk)[2]
+    disk_is_light =get_disk_info(disk)[1]
     if disk_is_light:
         service_name = f"{disk}_light_on.service"
         subprocess.run(["systemctl", "stop", service_name])
         subprocess.run(["systemctl", "disable", service_name])
         # check service status
-        disk_is_light =get_disk_info(disk)[2]
+        disk_is_light =get_disk_info(disk)[1]
         if not disk_is_light:
             print(f"Disk {disk} LED turn off successfully.")
             service_file = f"/etc/systemd/system/{disk}_light_on.service"
